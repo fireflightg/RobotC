@@ -52,7 +52,14 @@ void joystickControllerOne() //Driver 1 Controls drive train and hang mechanism
 	else
 		motor[robotLifter] = 0;
 
-	if(abs(joystick.joy1_y1)>10){ //Drive train control(tank drive)
+	//Accidental Mode Switch fix
+	if(joystick.joy1_TopHat==0){
+		motor[driveLeftFront] = 100;
+		motor[driveLeftBack] = 100;
+	}else if(joystick.joy1_TopHat==4){
+		motor[driveLeftFront] = -100;
+		motor[driveLeftBack] = -100;
+	}else	if(abs(joystick.joy1_y1)>10){ //Drive train control(tank drive)
 		motor[driveLeftFront] = joystick.joy1_y1;
 		motor[driveLeftBack] = joystick.joy1_y1;
 	}
