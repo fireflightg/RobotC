@@ -12,15 +12,16 @@
 #include "JoystickDriver.c"
 
 //Variables
-bool intakeOn,joy2Btn_1_Pressed,down;
+bool intakeOn,joy2Btn_1_Pressed,down,calibrated;
 int cubeLiftCount;
+float compassTheta;
 float cubeDropperPos,cubeLifterPos;
 
 void init(){ //Initiate Robot(servo positions, intake bool)
 	bFloatDuringInactiveMotorPWM = false;
 	nNoMessageCounterLimit=500;
-	cubeLiftCount=0;
-	intakeOn = joy2Btn_1_Pressed = down = false;
+	cubeLiftCount=compassTheta=0;
+	intakeOn = joy2Btn_1_Pressed = down = calibrated = false;
 	cubeDropperPos=50;
 	cubeLifterPos=128;
 	servo[cubeDropper] = cubeDropperPos;
@@ -52,6 +53,11 @@ void joystickControllerOne() //Driver 1 Controls drive train and hang mechanism
 		motor[robotLifter] = -100;
 	else
 		motor[robotLifter] = 0;
+
+	if(joy1Btn(9)&&joy1Btn(10))
+	{
+		if(joystick.joy1_TopHat==1){}
+	}
 
 	//Accidental Mode Switch fix
 	if(joystick.joy1_TopHat==0){
@@ -118,9 +124,8 @@ void joystickControllerTwo() //Driver 2 controls cube intake and cube lifter
 	}
 	if(!joy2Btn(1))
 		joy2Btn_1_Pressed=false;
-	if(joystick.joy2_TopHat==4)
-		motor[primaryCubeIntake] = 100;
-	else if(joy2Btn(2)){ //Reverse intake. Overrides intake forward
+
+	if(joy2Btn(2)){ //Reverse intake. Overrides intake forward
 		motor[primaryCubeIntake] = -35;
 		intakeOn = false;
 		motor[motorA] = -100;
@@ -151,6 +156,9 @@ task main(){
 	ClearTimer(T1);
 
 	while(true){
+	compassTheta = (abs(joystick.joy1_x1*.703125)+abs(joystick.joy1_y1*.703125))/2;
+	compassTheta = joystick.joy1_x1>0?joystick.joy1_y1/joystick.joy1_x1>0?compassTheta+90:compassTheta:joystick.joy1_y1/joystick.joy1_x1>0?compassTheta+180:compassTheta+270;
+	nxtDisplayCenteredTextLine(3,"%f",compassTheta);
 		if(bDisconnected){ //Stop Robot if disconnected
 			allStop();
 		}else{
