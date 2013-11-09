@@ -21,7 +21,7 @@ void init(){ //Initiate Robot(servo positions, intake bool)
 	nNoMessageCounterLimit=500;
 	cubeLiftCount=0;
 	intakeOn = joy2Btn_1_Pressed = down = false;
-	cubeDropperPos=50;
+	cubeDropperPos=60;
 	cubeLifterPos=128;
 	servo[cubeDropper] = cubeDropperPos;
 	servo[cubeLifter] = cubeLifterPos;
@@ -82,7 +82,7 @@ void joystickControllerTwo() //Driver 2 controls cube intake and cube lifter
 		cubeLiftCount=0;
 
 	if(joy2Btn(4)){ //Cube dropper Up
-		cubeDropperPos=50;
+		cubeDropperPos=60;
 		down=false;
 	}
 	else if(joy2Btn(3)){ //Cube dropper Down
@@ -96,19 +96,19 @@ void joystickControllerTwo() //Driver 2 controls cube intake and cube lifter
 		cubeLifterPos=0;
 		cubeLiftCount--;
 	}
-	else if(joy2Btn(8)&&cubeLiftCount<2400){ //Cube lifter Up
+	else if(joy2Btn(8)){ //Cube lifter Up
 		cubeLifterPos=255;
 		cubeLiftCount++;
 	}
-	else if(cubeLiftCount>0&&(down||cubeDropperPos==145)&&time1[T2]>1250){ //Autonomously reset cubeLifter
-		if(cubeLiftCount<1000) //Reset cubeDropper when at bottom
-			cubeDropperPos=50;
-		cubeLifterPos=0;
-		cubeLiftCount--;
-		down=true;
-		if(cubeLiftCount<200)
-			down=false;
-	}
+	//else if(cubeLiftCount>0&&(down||cubeDropperPos==145)&&time1[T2]>1250){ //Autonomously reset cubeLifter
+	//	if(cubeLiftCount<1000) //Reset cubeDropper when at bottom
+	//		cubeDropperPos=50;
+	//	cubeLifterPos=0;
+	//	cubeLiftCount--;
+	//	down=true;
+	//	if(cubeLiftCount<200)
+	//		down=false;
+	//}
 	else //Stop
 		cubeLifterPos=128;
 
@@ -127,7 +127,7 @@ void joystickControllerTwo() //Driver 2 controls cube intake and cube lifter
 		motor[motorB] = -100;
 	}
 	else if(intakeOn){ //Intake forward if toggle on
-		motor[primaryCubeIntake] = 36;
+		motor[primaryCubeIntake] = 32;
 		motor[motorA] = 100;
 		motor[motorB] = 100;
 	}
