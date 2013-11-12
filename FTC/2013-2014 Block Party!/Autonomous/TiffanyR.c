@@ -13,10 +13,10 @@
 
 #include "JoystickDriver.c"
 	void forward(int sec){
-	motor[leftb]=100;
-	motor[leftf]=100;
-	motor[rightb]=100;
-	motor[rightf]=100;
+	motor[leftb]=60;
+	motor[leftf]=60;
+	motor[rightb]=60;
+	motor[rightf]=60;
 	wait10Msec(sec);
 	motor[leftb]=0;
 	motor[leftf]=0;
@@ -37,10 +37,10 @@ void turnleft(int sec){
 }
 
 void turnright(int sec){
-	motor[leftb]=50;
-	motor[leftf]=50;
-	motor[rightb]=-50;
-	motor[rightf]=-50;
+	motor[leftb]=60;
+	motor[leftf]=60;
+	motor[rightb]=-60;
+	motor[rightf]=-60;
 	wait10Msec(sec);
 	motor[leftb]=0;
 	motor[leftf]=0;
@@ -64,12 +64,13 @@ task main()//when cube in ramp on right turn not tested
 servo[cubedropper]=50;
 servo[cubelifter]=128;
 waitForStart();
+servo[cubedropper]=50;
 servo[cubelifter]=255;
 wait10Msec(400);
 backward(65);
 servo[cubelifter]=255;
 servo[cubedropper]=145;
-forward(55);
+forward(60);
 //ramp
 turnright(200);//150 turns about 90 75 is about 30
 backward(170);
@@ -77,5 +78,4 @@ turnleft(140);
 backward(210);
 servo[cubelifter]=0;
 wait10Msec(400);
-
 }
