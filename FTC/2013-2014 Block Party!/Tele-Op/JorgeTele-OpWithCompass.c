@@ -8,12 +8,16 @@
 #pragma config(Motor,  mtr_S1_C3_2,     driveRightFront,  tmotorNormal, openLoop, reversed)
 #pragma config(Servo,  srvo_S2_C1_1,    cubeDropper,  tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_2,    cubeLifter,   tServoStandard)
+#pragma config(Sensor, S3,     HTCOMPASS,           sensorI2CCustom)
+
+#define threshold 25
 
 #include "JoystickDriver.c"
+#include "/hitechnic-compass.h"
 
 //Variables
-bool intakeOn,joy2Btn_1_Pressed,down,calibrated;
-int cubeLiftCount;
+bool intakeOn,joy2Btn_1_Pressed,down,calibrated,driveTrainOn;
+int cubeLiftCount,heading,compassReading;
 float compassTheta;
 float cubeDropperPos,cubeLifterPos;
 
@@ -21,11 +25,12 @@ void init(){ //Initiate Robot(servo positions, intake bool)
 	bFloatDuringInactiveMotorPWM = false;
 	nNoMessageCounterLimit=500;
 	cubeLiftCount=compassTheta=0;
-	intakeOn = joy2Btn_1_Pressed = down = calibrated = false;
+	intakeOn = joy2Btn_1_Pressed = down = calibrated = driveTrainOn = false;
 	cubeDropperPos=50;
 	cubeLifterPos=128;
 	servo[cubeDropper] = cubeDropperPos;
 	servo[cubeLifter] = cubeLifterPos;
+  HTMCsetTarget(HTCOMPASS);
 }
 
 void allStop(){
@@ -59,26 +64,56 @@ void joystickControllerOne() //Driver 1 Controls drive train and hang mechanism
 		if(joystick.joy1_TopHat==1){}
 	}
 
-	//Accidental Mode Switch fix
-	if(joystick.joy1_TopHat==0){
-		motor[driveLeftFront] = 100;
-		motor[driveLeftBack] = 100;
-	}else if(joystick.joy1_TopHat==4){
-		motor[driveLeftFront] = -100;
-		motor[driveLeftBack] = -100;
-	}else	if(abs(joystick.joy1_y1)>10){ //Drive train control(tank drive)
-		motor[driveLeftFront] = joystick.joy1_y1*.7;
-		motor[driveLeftBack] = joystick.joy1_y1*.7;
+	//Get joystick compassHeading
+	if(abs(joystick.joy1_y1)>70 || abs(joystick.joy1_x1)>70){ //Only pay attention to decisive joystick values
+		heading=atan((float)joystick.joy1_y1/(float)joystick.joy1_x1)*180/PI;
+		if(joystick.joy1_x1>=0){
+				heading*=-1;
+			if(joystick.joy1_y1>0)
+				heading+=360;
+		}
+		if(joystick.joy1_x1<0){
+			heading*=-1;
+			heading+=180;
+		}
+	}
+	compassTheta=heading;
+	nxtDisplayCenteredTextLine(2,"%i",heading);
+	//Drive train right stick forward/reverse left stick compassHeading of robot
+	//if(abs(joystick.joy1_y2)>10){ //Forward/reverse overrides turning
+	//	motor[driveLeftFront] = joystick.joy1_y2;
+	//	motor[driveLeftBack] = joystick.joy1_y2;
+	//	motor[driveRightFront] = joystick.joy1_y2;
+	//	motor[driveRightBack] = joystick.joy1_y2;
+	//}
+	compassReading=HTMCreadRelativeHeading(HTCOMPASS);
+	if(abs(compassTheta-HTMCreadRelativeHeading(HTCOMPASS))>20){ //3 degrees of leeway
+		if(abs(compassTheta-HTMCreadRelativeHeading(HTCOMPASS))<abs(360-compassTheta-HTMCreadRelativeHeading(HTCOMPASS))){ //Decides which turn direction is most efficient
+			motor[driveLeftFront] = -100+joystick.joy1_y2;
+			motor[driveLeftBack] = -100+joystick.joy1_y2;
+			motor[driveRightFront] = 100;
+			motor[driveRightBack] = 100;
+			driveTrainOn=true;
+		}
+		else{
+			motor[driveLeftFront] = 100;
+			motor[driveLeftBack] = 100;
+			motor[driveRightFront] = -100+joystick.joy1_y2;
+			motor[driveRightBack] = -100+joystick.joy1_y2;
+			driveTrainOn=true;
+		}
+	}else if(abs(joystick.joy1_y2)>threshold){
+		motor[driveLeftFront] = joystick.joy1_y2;
+		motor[driveLeftBack] = joystick.joy1_y2;
+		motor[driveRightFront] = joystick.joy1_y2;
+		motor[driveRightBack] = joystick.joy1_y2;
 	}
 	else{
 		motor[driveLeftFront] = 0;
 		motor[driveLeftBack] = 0;
-	}if(abs(joystick.joy1_y2)>10){
-		motor[driveRightFront] = joystick.joy1_y2*.7;
-		motor[driveRightBack] = joystick.joy1_y2*.7;
-	}else{
 		motor[driveRightFront] = 0;
 		motor[driveRightBack] = 0;
+		driveTrainOn=false;
 	}
 }
 
@@ -154,11 +189,8 @@ task main(){
 	waitForStart();
 
 	ClearTimer(T1);
-
+	int heading=0;
 	while(true){
-	compassTheta = (abs(joystick.joy1_x1*.703125)+abs(joystick.joy1_y1*.703125))/2;
-	compassTheta = joystick.joy1_x1>0?joystick.joy1_y1/joystick.joy1_x1>0?compassTheta+90:compassTheta:joystick.joy1_y1/joystick.joy1_x1>0?compassTheta+180:compassTheta+270;
-	nxtDisplayCenteredTextLine(3,"%f",compassTheta);
 		if(bDisconnected){ //Stop Robot if disconnected
 			allStop();
 		}else{
