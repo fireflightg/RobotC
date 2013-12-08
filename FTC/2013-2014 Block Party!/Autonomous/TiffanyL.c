@@ -12,7 +12,12 @@
 #pragma config(Servo,  srvo_S2_C1_2,    cubelifter,               tServoStandard)
 
 #include "JoystickDriver.c"
-	void forward(int sec){
+void intakeOn(float seconds){
+	motor[primaryCubeIntake] = 100;
+	wait1Msec(seconds*1000);
+	motor[primaryCubeIntake] = 0;
+}
+void forward(int sec){
 	motor[leftb]=60;
 	motor[leftf]=60;
 	motor[rightb]=60;
@@ -61,9 +66,10 @@ void backward(int sec){
 }
 task main()//when cube in ramp on right turn not tested
 {
+waitForStart();
+	intakeOn(2);
 servo[cubedropper]=50;
 servo[cubelifter]=128;
-waitForStart();
 servo[cubedropper]=50;
 servo[cubelifter]=255;
 wait10Msec(400);

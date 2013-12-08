@@ -105,6 +105,11 @@ void allStop(){
 }
 
 //Secondary Actions
+void raiseArm(float seconds){
+	motor[robotLifter]=100;
+	wait1Msec(seconds*1000);
+	motor[robotLifter]=0;
+}
 void dropCube(){
 	servo[cubeDropper] = cubeDropperDown;
 }
@@ -134,51 +139,14 @@ void intakeOn(float seconds){
 task main()
 {
 	waitForStart();
-	wait1Msec(6000);
+
+
+
+	forward(100,1);
 	init();
-
 	intakeOn(2);
-
-	//waitForStart();
-
-	//forward(60,.5);
-	//right(100,1);
-	//HTIRS2readAllDCStrength(HTIRS, dcS1, dcS2, dcS3, dcS4, dcS5); //Take IR reading
-	HTIRS2readAllDCStrength(HTIRS, dcS1, dcS2, dcS3, dcS4, dcS5); //Take IR reading
-	ClearTimer(T1);
-	while(true){
-		reverse(30);
-		HTIRS2readAllDCStrength(HTIRS, dcS1, dcS2, dcS3, dcS4, dcS5); //Take IR reading
-		nxtDisplayCenteredTextLine(1,"IRSENSOR");
-		nxtDisplayCenteredTextLine(2,"%i",dcS1);
-		nxtDisplayCenteredTextLine(3,"%i",dcS2);
-		nxtDisplayCenteredTextLine(4,"%i",dcS3);
-		nxtDisplayCenteredTextLine(5,"%i",dcS4);
-		nxtDisplayCenteredTextLine(6,"%i",dcS5);
-		if(dcS3>50)
-			break;
-		if(time1[T1]/1000>7)
-			goto end;
-	}
-	//reverse(30,1);
-	time=time1[T1];
-	left(100,1.4);
-	raiseCube(4.5);
-	reverse(30,.7);
-	dropCube();
-	wait1Msec(1000);
-	cubeUp();
-	forward(30,.65);
-	right(100,1.41);
-	forward(30,(time/1000));
-	//Ramp
-	right(100,.8);
-	forward(100,1);
-	right(100,1);
-	forward(100,1);
-	right(100,1.1);
-	forward(100,1.5);
-	lowerCube(4.5);
-	end:;
+	left(100,.5);
+	raiseArm(1);
+	forward(100,1.8);
 	allStop();
 }

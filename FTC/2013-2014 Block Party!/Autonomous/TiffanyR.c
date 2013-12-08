@@ -61,9 +61,10 @@ void backward(int sec){
 }
 task main()//when cube in ramp on right turn not tested
 {
+waitForStart();
+	intakeOn(2);
 servo[cubedropper]=50;
 servo[cubelifter]=128;
-waitForStart();
 servo[cubedropper]=50;
 servo[cubelifter]=255;
 wait10Msec(400);
