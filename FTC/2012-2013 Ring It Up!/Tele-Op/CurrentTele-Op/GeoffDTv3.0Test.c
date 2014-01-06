@@ -3,7 +3,7 @@
 #pragma config(Motor,  mtr_S1_C1_2,     motorLeftBack,   tmotorNormal, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_1,     ramp,   tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     arms,   tmotorNormal, openLoop)
-#pragma config(Motor,  mtr_S1_C3_1,     motorRightFront,   tmotorNormal, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C3_1,     motorRightFront,   tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     motorRightBack,   tmotorNormal, openLoop)
 #pragma config(Servo,  srvo_S1_C4_1,    clawLeft,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C4_2,    clawRight,               tServoStandard)
@@ -12,7 +12,7 @@
 #pragma config(Sensor, S3,     LEGOLS,              sensorLightInactive)
 #pragma config(Sensor, S4,     HTSMUX,              sensorI2CCustom)
 
-#include "UpdatedJoystickDriver.c"
+#include "JoystickDriver.c"
 #include "/hitechnic-sensormux.h"
 #include "/lego-light.h"
 #include "/lego-touch.h"
@@ -132,14 +132,14 @@ void joystickControllerTwo()
 		else
 			speedContTwo=1;
 
-		//Arm Controll
+		/*//Arm Controll
 		if(joy2Btn(5))
 			motor[arms] = -100*speedContTwo;
 		else if(joy2Btn(6))
 			motor[arms] = 100*speedContTwo;
 		else
 			motor[arms] = 0;
-
+*/
 		//Claw Control
 			//Position Control
 		if(joy2Btn(4))

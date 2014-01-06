@@ -5,7 +5,7 @@
 #pragma config(Motor,  mtr_S1_C2_1,     flagSpinner,  	tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     driveLeft,   tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     driveRight,   tmotorNormal, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C3_2,     primaryCubeIntake,  tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C3_2,     primaryCubeIntake,  tmotorNormal, openLoop, reversed)
 #pragma config(Servo,  srvo_S2_C1_1,    cubeDropper,  tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_2,    cubeLifter,   tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_3,    flagExtender,   tServoStandard)
@@ -84,13 +84,15 @@ void joystickControllerOne() //Driver 1 Controls drive train and hang mechanism
 	}else if(joystick.joy1_TopHat==4){
 		motor[driveLeft] = -100;
 	}else	if(abs(joystick.joy1_y1)>10){ //Drive train control(tank drive)
-		motor[driveLeft] = exponentialJoystick(joystick.joy1_y1)*(abs(joystick.joy1_y1)/joystick.joy1_y1);
+		motor[driveLeft] = 100*(abs(joystick.joy1_y1)/joystick.joy1_y1);
+		motor[driveRight] = 100*(abs(joystick.joy1_y1)/joystick.joy1_y1);
+	}
+	else if(abs(joystick.joy1_x1)>10){
+		motor[driveLeft] = 100*(abs(joystick.joy1_x1)/joystick.joy1_x1);
+		motor[driveRight] = -100*(abs(joystick.joy1_x1)/joystick.joy1_x1);
 	}
 	else{
 		motor[driveLeft] = 0;
-	}if(abs(joystick.joy1_y2)>10){
-		motor[driveRight] = exponentialJoystick(joystick.joy1_y2)*(abs(joystick.joy1_y2)/joystick.joy1_y2);
-	}else{
 		motor[driveRight] = 0;
 	}
 }
