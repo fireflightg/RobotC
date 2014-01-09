@@ -13,6 +13,7 @@
 #pragma config(Sensor, S4,     HTIRS,           sensorI2CCustom)
 
 //TODO: Change end of crate check
+//			Calibrate compass sensor
 
 #include "/hitechnic-irseeker-v2.h"
 #include "/hitechnic-compass.h"
@@ -20,18 +21,18 @@
 
 #define fullHeight 4.5
 #define cubeDropperUp 0
-#define cubeDropperDown 120
+#define cubeDropperDown 135
 #define cubeLifterStop 128
 #define cubeLifterUp 255
 #define cubeLifterDown 0
-int dcS1,dcS2,dcS3,dcS4,dcS5;
-float time,time2,wait; //Seconds
-bool irFound;
+int dcS1,dcS2,dcS3,dcS4,dcS5,compassHeading;
+float time,time2,wait=0.0; //Seconds
+bool irFound,cubeRaised;
 
 void init(){
+ 				HTMCsetTarget(HTCOMPASS);
         bFloatDuringInactiveMotorPWM = false;
-        irFound=false;
-        wait=0.0;
+        irFound=cubeRaised=false;
         servo[cubeDropper] = cubeDropperUp;
         servo[cubeLifter] = cubeLifterStop;
 }
@@ -71,6 +72,14 @@ void left(int powerLevel,float seconds){
 void left(int powerLevel){
         motor[driveLeft] = -powerLevel;
         motor[driveRight] = powerLevel;
+}
+
+void compassLeft(int powerLevel, int targetCompassHeading){
+	while(abs(compassHeading-targetCompassHeading)>2){
+		left(powerLevel);
+	}
+  motor[driveLeft] = 0;
+  motor[driveRight] = 0;
 }
 
 void right(int powerLevel,float seconds){
@@ -150,8 +159,9 @@ void DEBUG(){
 }
 
 task raiseCubeLifter(){
-        raiseCube(fullHeight);
-        StopTask(raiseCubeLifter);
+	raiseCube(fullHeight);
+	cubeRaised=true;
+  StopTask(raiseCubeLifter);
 }
 
 task raiseArmsTask(){
@@ -164,6 +174,7 @@ task initiateCubePosition(){
         StartTask(raiseCubeLifter);
         StopTask(initiateCubePosition);
 }
+
 
 task main()
 {
@@ -178,8 +189,10 @@ task main()
                 {while(nNxtButtonPressed!=-1){}
                         wait+=.1;
                       }
-                if(wait<0)
+                if(wait<0.0){
+
                         wait=0;
+                      }
         }
 
         //waitForStart();
@@ -202,11 +215,11 @@ task main()
                         irFound=true;
                         break;
                 }
-                if(time1[T1]/1000>7){ //End of crates(use ultrasonic or something) RECHECK For IR
+                if(time1[T1]/1000>=5){ //End of crates(use ultrasonic or something) RECHECK For IR
                         time=time1[T1];
                         ClearTimer(T1);
                         while(!irFound){
-                                reverse(30);
+                                forward(30);
                                 HTIRS2readAllDCStrength(HTIRS, dcS1, dcS2, dcS3, dcS4, dcS5); //Take IR reading
                                 DEBUG();
                                 if(dcS3>50){
@@ -215,30 +228,31 @@ task main()
                                         irFound=true;
                                         break;
                                 }
-                                if(time1[T1]/1000>7){ //Still no ir found, goto ramp
+                                if(time1[T1]>=time){ //Still no ir found, goto ramp
                                         goto ramp;
                                 }
                         }
                 }
         }
-        left(100,1.4);
+        left(100,1.65);
+        while(!cubeRaised){}
         reverse(30,.7);
         dropCube();
         wait1Msec(1000); //Let cube fall
         cubeUp();
         forward(30,.65);
-        right(100,1.5);
+        right(100,1.75);
         forward(30,abs((time/1000)-(time2/1000)));
 
         ramp:;
         //Ramp
         StartTask(raiseArmsTask);
-        right(100,.8);
-        forward(100,1);
         right(100,1);
         forward(100,1);
-        right(100,1.1);
-        forward(100,1.5);
+        right(100,1.2);
+        forward(100,1.2);
+        right(100,1.4);
+        forward(100,2);
         lowerCube(fullHeight);
 
         end:; //Failed IR
