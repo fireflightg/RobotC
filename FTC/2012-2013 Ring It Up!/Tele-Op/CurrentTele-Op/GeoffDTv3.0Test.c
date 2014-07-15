@@ -1,8 +1,8 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
 #pragma config(Motor,  mtr_S1_C1_1,     motorLeftFront,   tmotorNormal, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C1_2,     motorLeftBack,   tmotorNormal, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_1,     ramp,   tmotorNormal, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     arms,   tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     arms,   tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C2_2,     ramp,   tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C3_1,     motorRightFront,   tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     motorRightBack,   tmotorNormal, openLoop)
 #pragma config(Servo,  srvo_S1_C4_1,    clawLeft,               tServoStandard)
@@ -31,7 +31,7 @@ void init(){
 
 	//Initiate Variables
 	rampLocked=speedToggleOne=speedToggleTwo=touched=weighted=on=prevOn=false;
-	speedContOne=speedContTwo=1;
+	speedContOne=speedContTwo=.5;
 	clawVal=7;
 
 	LSsetActive(LEGOLS);
@@ -108,9 +108,9 @@ void joystickControllerOne()
 			rampLocked=!rampLocked;
 
 		//Ramp Control
-		if(joy1Btn(6))
-			motor[ramp]=50*speedContOne;
-		else if(joy1Btn(5))
+		if(joy2Btn(6))
+			motor[ramp]=100*speedContOne;
+		else if(joy2Btn(5))
 			motor[ramp]=-75*speedContOne;
 		else
 			motor[ramp]=0;
@@ -132,14 +132,14 @@ void joystickControllerTwo()
 		else
 			speedContTwo=1;
 
-		/*//Arm Controll
-		if(joy2Btn(5))
+		//Arm Controll
+		if(joy1Btn(5))
 			motor[arms] = -100*speedContTwo;
-		else if(joy2Btn(6))
+		else if(joy1Btn(6))
 			motor[arms] = 100*speedContTwo;
 		else
 			motor[arms] = 0;
-*/
+
 		//Claw Control
 			//Position Control
 		if(joy2Btn(4))
@@ -212,7 +212,7 @@ task main()
 
 	ClearTimer(T1);
 	while(true){
-		if(isConnected()){
+		//if(isConnected()){
 	  	//Update Sensors
 			updateSensors();
 
@@ -224,9 +224,9 @@ task main()
 			joystickControllerTwo();
 
 			debug();
-		}
-		else{
-			allStop();
-		}
+		//}
+		//else{
+		//	allStop();
+		//}
 	}
 }

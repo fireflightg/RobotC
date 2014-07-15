@@ -1,15 +1,14 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  none)
 #pragma config(Hubs,  S2, HTServo,     none,     none,  none)
-#pragma config(Motor,  mtr_S1_C1_1,           empty,tmotorNormal, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,                  robotLifter,                   tmotorNormal, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_1,     flagSpinner,          tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     primaryCubeIntake,tmotorNormal, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_2,     flagSpinner,                   tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     robotLifterRight,          tmotorNormal, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_2,     driveLeft,   tmotorNormal, openLoop)
-#pragma config(Motor,  mtr_S1_C3_1,     driveRight,   tmotorNormal, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C3_2,     primaryCubeIntake,  tmotorNormal, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C3_1,     robotLifterLeft,   tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C3_2,     driveRight,  tmotorNormal, openLoop, reversed)
 #pragma config(Servo,  srvo_S2_C1_1,    cubeDropper,  tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_2,    cubeLifter,   tServoStandard)
-#pragma config(Servo,  srvo_S2_C1_3,    flagExtender,   tServoStandard)
-#pragma config(Sensor, S3,     HTCOMPASS,           sensorI2CCustom)//
+#pragma config(Sensor, S3,     HTCOMPASS,           sensorI2CCustom)
 #pragma config(Sensor, S4,     HTIRS,           sensorI2CCustom)
 
 //TODO: Change end of crate check
@@ -100,7 +99,8 @@ void driveStop(){
 }
 void allStop(){
         motor[primaryCubeIntake]=0;
-        motor[robotLifter]=0;
+				motor[robotLifterRight]=0;
+				motor[robotLifterLeft]=0;
         motor[driveLeft]=0;
         motor[driveRight]=0;
         motor[flagSpinner]=0;
@@ -138,15 +138,19 @@ void intakeOn(float seconds){
 }
 
 void raiseArms(float seconds){
-        motor[robotLifter] = 100;
+				motor[robotLifterRight]=100;
+				motor[robotLifterLeft]=100;
         wait1Msec(seconds*1000);
-        motor[robotLifter] = 0;
+				motor[robotLifterRight]=0;
+				motor[robotLifterLeft]=0;
 }
 
 void lowerArms(float seconds){
-        motor[robotLifter] = -100;
+				motor[robotLifterRight]=-100;
+				motor[robotLifterLeft]=-100;
         wait1Msec(seconds*1000);
-        motor[robotLifter] = 0;
+				motor[robotLifterRight]=0;
+				motor[robotLifterLeft]=0;
 }
 
 void DEBUG(){
@@ -165,7 +169,7 @@ task raiseCubeLifter(){
 }
 
 task raiseArmsTask(){
-        raiseArms(2);
+        raiseArms(1);
         StopTask(raiseArmsTask);
 }
 
@@ -175,86 +179,38 @@ task initiateCubePosition(){
         StopTask(initiateCubePosition);
 }
 
+task lowerCubeTask(){
+				lowerCube(fullHeight);
+				dropCube();
+}
 
 task main()
 {
+	int powerLevel = 100;
+	while(true){
+		getJoystickSettings(joystick);
+		if(joy1Btn(1))
+			powerLevel = 20;
+		else if(joy1Btn(2))
+			powerLevel = 40;
+		else if(joy1Btn(3))
+			powerLevel = 60;
+		else if(joy1Btn(4))
+			powerLevel = 80;
+		else if(joy1Btn(5))
+			powerLevel = 100;
 
-        while(nNxtButtonPressed!=3){ //Choose wait time
-                nxtDisplayCenteredBigTextLine(1,"%f",wait);
-                if(nNxtButtonPressed==2)
-                {while(nNxtButtonPressed!=-1){}
-                        wait-=.1;
-                      }
-                else if(nNxtButtonPressed==1)
-                {while(nNxtButtonPressed!=-1){}
-                        wait+=.1;
-                      }
-                if(wait<0.0){
+		if(joystick.joy1_y1>0){
+			raiseCube(.1);
+		}else if(joystick.joy1_y1<0){
+			lowerCube(.1);
+		}else if(joystick.joy1_x1>0){
+			right(powerLevel);
+		}else if(joystick.joy1_x1<0){
+			left(powerLevel);
+		}else{
+			driveStop();
+		}
+	}
 
-                        wait=0;
-                      }
-        }
-
-        //waitForStart();
-
-        init();
-
-        StartTask(initiateCubePosition);
-
-        wait1Msec(wait*1000);
-
-        HTIRS2readAllDCStrength(HTIRS, dcS1, dcS2, dcS3, dcS4, dcS5); //Take IR reading
-        ClearTimer(T1);
-        while(!irFound){
-                reverse(30);
-                HTIRS2readAllDCStrength(HTIRS, dcS1, dcS2, dcS3, dcS4, dcS5); //Take IR reading
-                DEBUG();
-                if(dcS3>50){
-                        driveStop();
-                        time=time1[T1];
-                        irFound=true;
-                        break;
-                }
-                if(time1[T1]/1000>=5){ //End of crates(use ultrasonic or something) RECHECK For IR
-                        time=time1[T1];
-                        ClearTimer(T1);
-                        while(!irFound){
-                                forward(30);
-                                HTIRS2readAllDCStrength(HTIRS, dcS1, dcS2, dcS3, dcS4, dcS5); //Take IR reading
-                                DEBUG();
-                                if(dcS3>50){
-                                        driveStop();
-                                        time2=time1[T1];
-                                        irFound=true;
-                                        break;
-                                }
-                                if(time1[T1]>=time){ //Still no ir found, goto ramp
-                                        goto ramp;
-                                }
-                        }
-                }
-        }
-        left(100,1.65);
-        while(!cubeRaised){}
-        reverse(30,.7);
-        dropCube();
-        wait1Msec(1000); //Let cube fall
-        cubeUp();
-        forward(30,.65);
-        right(100,1.75);
-        forward(30,abs((time/1000)-(time2/1000)));
-
-        ramp:;
-        //Ramp
-        StartTask(raiseArmsTask);
-        right(100,1);
-        forward(100,1);
-        right(100,1.2);
-        forward(100,1.2);
-        right(100,1.4);
-        forward(100,2);
-        lowerCube(fullHeight);
-
-        end:; //Failed IR
-        allStop();
 }

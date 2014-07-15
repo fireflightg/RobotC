@@ -1,11 +1,11 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  none)
 #pragma config(Hubs,  S2, HTServo,     none,     none,  none)
-#pragma config(Motor,  mtr_S1_C1_1,   	primaryCubeIntake,tmotorNormal, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,  		robotLifter,   		tmotorNormal, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_1,     driveLeftBack,  	tmotorNormal, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     driveLeftFront,   tmotorNormal, openLoop)
-#pragma config(Motor,  mtr_S1_C3_1,     driveRight,   tmotorNormal, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C3_2,     flagSpinner,  tmotorNormal, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_1,     primaryCubeIntake,tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     flagSpinner,                   tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     robotLifterRight,          tmotorNormal, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C2_2,     driveLeft,   tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C3_1,     robotLifterLeft,   tmotorNormal, openLoop)
+#pragma config(Motor,  mtr_S1_C3_2,     driveRight,  tmotorNormal, openLoop, reversed)
 #pragma config(Servo,  srvo_S2_C1_1,    cubeDropper,  tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_2,    cubeLifter,   tServoStandard)
 #pragma config(Sensor, S3,     HTCOMPASS,           sensorI2CCustom)
@@ -33,17 +33,14 @@ void init(){
 
 //Movement Functions
 void forward(int powerLevel,float seconds){
-	motor[driveLeftBack] = powerLevel;
-	motor[driveLeftFront] = powerLevel;
+	motor[driveLeft] = powerLevel;
 	motor[driveRight] = powerLevel;
 	wait1Msec(seconds*1000);
-	motor[driveLeftBack] = 0;
-	motor[driveLeftFront] = 0;
+	motor[driveLeft] = 0;
 	motor[driveRight] = 0;
 }
 void forward(int powerLevel){
-	motor[driveLeftBack] = powerLevel;
-	motor[driveLeftFront] = powerLevel;
+	motor[driveLeft] = powerLevel;
 	motor[driveRight] = powerLevel;
 }
 
@@ -94,7 +91,8 @@ void right(int powerLevel){
 
 void allStop(){
 	motor[primaryCubeIntake]=0;
-	motor[robotLifter]=0;
+	motor[robotLifterRight]=0;
+	motor[robotLifterLeft]=0;
 	motor[driveLeftBack]=0;
 	motor[driveLeftFront]=0;
 	motor[driveRight]=0;
