@@ -15,7 +15,7 @@ float smooth(float data,float filterVal,float smoothedVal){
 
 float avgSonarValue(){
   int r = 0;
-  float[10] tmpArray = new float[10];
+  float tmpArray[10];
   for(int i=0;i<10;i++){
   	tmpArray[i] = SensorValue[sonarSensor];
 	}
