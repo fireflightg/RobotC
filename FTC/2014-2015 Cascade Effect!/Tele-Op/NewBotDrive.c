@@ -1,21 +1,22 @@
 #pragma config(Hubs,   S1, HTMotor, HTServo, HTMotor, none)
 #pragma config(Motor,  mtr_S1_C1_1,     driveRight,   tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C1_2,     lift,  tmotorNormal, openLoop)
+#pragma config(Servo,  srvo_S1_C2_1,    fieldGrabberRight, tServoStandard)
+#pragma config(Servo,  srvo_S1_C2_2,    fieldGrabberLeft, tServoStandard)
 #pragma config(Motor,  mtr_S1_C3_1,     driveLeft,  tmotorNormal, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     intake, tmotorNormal, openLoop)
 
 #include "JoystickDriver.c"
 
-#define open 180
+#define open 0
 #define grab 100
-#define closed 0
+#define closed 105
+#define inside 215
 #define _threshold 20
 
-bool grabberOpen = true;
-bool lastGrabState = true;
-
 void init(){
-
+	servo[fieldGrabberLeft] = inside-15;
+	servo[fieldGrabberRight] = 235-inside;
 }
 
 void allStop(){
@@ -26,7 +27,7 @@ float exponentialJoystick(int joyVal){
 	return (float)pow((joyVal/12),2);
 }
 
-void joyStickOne(){
+void joystickOne(){
 
 	if(abs(joystick.joy1_y2)>_threshold){
 		motor[driveRight] = -joystick.joy1_y2/abs(joystick.joy1_y2)*exponentialJoystick(joystick.joy1_y2);
@@ -47,6 +48,19 @@ void joyStickOne(){
 		motor[lift] = -20;
 	else
 		motor[lift] = 0;
+
+	if(joy1Btn(1)){
+		servo[fieldGrabberLeft] = inside-15;
+		servo[fieldGrabberRight] = 235-inside;
+	}
+	else if(joy1Btn(2)){
+		servo[fieldGrabberLeft] = open;
+		servo[fieldGrabberRight] = 235-open;
+	}
+	else if(joy1Btn(3)){
+		servo[fieldGrabberLeft] = closed;
+		servo[fieldGrabberRight] = 235-closed;
+	}
 }
 
 void joyStickTwo(){
