@@ -86,22 +86,25 @@ void joystickControllerOne()
 			speedContOne=1;
 
 		//Drive Train Control
-		if(abs(joystick.joy1_y1)>threshold){
+		if(abs(joystick.joy1_x1)>80){
+			motor[motorLeftFront]=joystick.joy1_x1*speedContOne;
+			motor[motorLeftBack]=joystick.joy1_x1*speedContOne;
+			motor[motorRightFront]=-joystick.joy1_x1*speedContOne;
+			motor[motorRightBack]=-joystick.joy1_x1*speedContOne;
+		}
+		else if(abs(joystick.joy1_y1)>threshold){
 			motor[motorLeftFront]=joystick.joy1_y1*speedContOne;
 			motor[motorLeftBack]=joystick.joy1_y1*speedContOne;
+			motor[motorRightFront]=joystick.joy1_y1*speedContOne;
+			motor[motorRightBack]=joystick.joy1_y1*speedContOne;
 		}
 		else{
 			motor[motorLeftFront]=0;
 			motor[motorLeftBack]=0;
-		}
-		if(abs(joystick.joy1_y2)>threshold){
-			motor[motorRightFront]=joystick.joy1_y2*speedContOne;
-			motor[motorRightBack]=joystick.joy1_y2*speedContOne;
-		}
-		else{
 			motor[motorRightFront]=0;
 			motor[motorRightBack]=0;
 		}
+
 
 		//Ramp Lock
 		if(joy1Btn(4))
@@ -212,7 +215,7 @@ task main()
 
 	ClearTimer(T1);
 	while(true){
-		if(isConnected()){
+		if(true){
 	  	//Update Sensors
 			updateSensors();
 
