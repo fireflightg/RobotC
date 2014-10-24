@@ -1,4 +1,4 @@
-#pragma config(Sensor, S1,     HTPB,                sensorI2CCustom9V)
+#pragma config(Sensor, S1,     HTSPB,                sensorI2CCustom9V)
 /***************************************************************************/
 //            Hardware: RadioShack Tricolor LED Strip
 //            Arduino IDE: Arduino-1.0
@@ -19,8 +19,8 @@
 //  License along with this library; if not, see <http://www.gnu.org/licenses/>
 //
 /*****************************************************************************/
+#include "/hitechnic-superpro.h"
 
-#include "/hitechnic-protoboard.h"
 
 // ******** DEBUG ==== should auto config to adapt different mother board *********
 //#define DATA_1 (PORTF |=  0X01)    // DATA 1    // for ATMEGA
@@ -161,18 +161,13 @@ task main()
 {
 
   // Setup all the digital IO ports as outputs (0xFF)
-  if (!HTPBsetupIO(HTPB, 0xFF)) {
-    nxtDisplayTextLine(4, "ERROR!!");
-    wait1Msec(2000);
-    StopAllTasks();
-	}
 	while(true){
-	for(int i=0;i<10;i++){
-	for(int j=0;j<10;j++){
-		HTPBwriteIO(HTPB, pattern_test_red[i][j]);
-	}
-}
-}/*
+		for(int k=0;k<10;k++){
+			for(int j=0;j<10;j++){
+  			HTSPBwriteAnalog(HTSPB, HTSPB_DACO0, DAC_MODE_DCOUT, 1, pattern_test_red[k][j]);
+			}
+		}
+	}/*
   send_1M_pattern(pattern_test_red, 10, 500);
   wait1Msec(500);
   send_1M_pattern(pattern_test_blue, 10, 500);
