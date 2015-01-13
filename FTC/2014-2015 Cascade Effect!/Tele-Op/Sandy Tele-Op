@@ -1,11 +1,11 @@
-#pragma config(Hubs,  S1, HTMotor,  HTServo,  HTMotor,  none)
+#pragma config(Hubs,  S1, HTMotor,  HTServo,  HTMotor,  HTMotor)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Motor,  mtr_S1_C1_2,     lift,          tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C3_2,     intake,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C2_1,    fieldGrabberRight,    tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_2,    fieldGrabberLeft,     tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_3,    scoopBridge,          tServoStandard)
-#pragma config(Servo,  srvo_S1_C2_4,    frontBridge,          tServoStandard)
+#pragma config(Servo,  srvo_S1_C2_4,    rampBridge,          tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S1_C2_6,    servo6,               tServoNone)
 #pragma config(Motor,  mtr_S1_C1_1,     driveRight,    tmotorTetrix, openLoop)
@@ -17,16 +17,14 @@
 #include "JoystickDriver.c"
 
 #define _open 0
-#define _grab 100
-#define _closed 105
-#define _inside 205
+#define _closed 205
 #define _threshold 20
 
 void init(){
-	servo[fieldGrabberLeft] = 265;//inside-15;
-	servo[fieldGrabberRight] = 235-inside;
+	servo[fieldGrabberLeft] = _open;
+	servo[fieldGrabberRight] = 255-_open;
 	servo[scoopBridge] = 127;
-	servo[frontBridge] = 0;
+	servo[rampBridge] = 0;
 }
 
 float exponentialJoystick(int joyVal){
@@ -34,13 +32,33 @@ float exponentialJoystick(int joyVal){
 }
 
 void sticksDown(){
-	servo[fieldGrabberLeft] = open;
-	servo[fieldGrabberRight] = 255-open;
+	servo[fieldGrabberLeft] = _open;
+	servo[fieldGrabberRight] = 255-_open;
 }
 
 void sticksUp(){
-	servo[fieldGrabberLeft] = inside-15;
-	servo[fieldGrabberRight] = 255-inside;
+	servo[fieldGrabberLeft] = _closed-15;
+	servo[fieldGrabberRight] = 255-_closed;
+}
+
+void retainBalls()
+{
+	servo[scoopBridge] = 0;
+}
+
+void releaseBalls()
+{
+	servo[scoopBridge] = 256;
+}
+
+void closeRamp()
+{
+	servo[rampBridge] = 0;
+}
+
+void openRamp()
+{
+	servo[rampBridge] = 100;
 }
 
 void allStop(){
@@ -48,8 +66,6 @@ void allStop(){
 	motor[driveRight] = 0;
 	motor[lift] = 0;
 	motor[intake] = 0;
-	servo[frontBridge] = 127;
-	servo[scoopBridge] = 127;
 }
 
 //Joystick one controls the drive train and goal grabbers
@@ -57,7 +73,7 @@ void joyStickOne(){
 	
 	getJoystickSettings(joystick);
 	
-	if(abs(joystick.joy1_y1)>_threshold)
+	if(abs(joystick.joy1_y1)>_threshold)//Check joystick not in deadzone
 	{
 		motor[driveRight] = joystick.joy1_y1;
 	}
@@ -74,12 +90,12 @@ void joyStickOne(){
 		motor[driveLeft] = 0;
 	}
 
-	if(joy1Btn(8))
+	if(joy1Btn(8))//Grab rolling goal
 	{
 		sticksDown();
 	}
 
-	if(joy1Btn(6))
+	if(joy1Btn(6))//Release rolling goal
 	{
 		sticksUp();
 	}
@@ -92,13 +108,47 @@ void joyStickTwo()
 
 	getJoystickSettings(joystick);
 
-	if(joy2Btn(5))
+	if(joy2Btn(1))//Intake reverse
+	{
+		motor[intake] = -60;
+	}
+	else if(joy2Btn(3))//Intake forward
+	{
+		motor[intake] = 60;
+	}
+	else{
+		motor[intake] = 0;
+	}
+
+	if(joy2Btn(2))//Ramp bridge down
+	{
+		openRamp();
+	}
+	else if(joy2Btn(4))//Ramp bridge up
+	{
+		closeRamp();
+	}
+
+	if(joy2Btn(5))//Lift down
 	{
 		motor[lift] = -20;
 	}
-	else if(joy2Btn(6))
+	else if(joy2Btn(6))//Lift ups
 	{
 		motor[lift] = 100;
+	}
+	else
+	{
+		motor[lift] = 0;
+	}
+
+	if(joy2Btn(7))//Release balls
+	{
+		releaseBalls();
+	}
+	else if(joy2Btn(8))//Raise scoop bridge
+	{
+		retainBalls();
 	}
 
 }
@@ -107,6 +157,8 @@ task main()
 {
 	
 	init();
+
+	waitForStart();
 
 	while(true)
 	{
