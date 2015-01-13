@@ -56,7 +56,7 @@ void updateSensors(){
 
 void joystickControllerOne() //Driver 1 Controls drive train and hang mechanism
 
-{
+{/*
         if(joy1Btn(1))
                 motor[flagSpinner]=100;
         else if(joy1Btn(3))
@@ -77,7 +77,7 @@ void joystickControllerOne() //Driver 1 Controls drive train and hang mechanism
       	}else{
        		motor[robotLifterRight]=0;
         	motor[robotLifterLeft]=0;
-      	}
+      	}*/
 
         //Accidental Mode Switch fix
         if(joystick.joy1_TopHat==0){
@@ -107,7 +107,7 @@ void joystickControllerOne() //Driver 1 Controls drive train and hang mechanism
 }
 
 void joystickControllerTwo() //Driver 2 controls cube intake and cube lifter
-{
+{/*
         if(cubeLiftCount<0) //Don't let the count go negative
                 cubeLiftCount=0;
 
@@ -141,7 +141,7 @@ void joystickControllerTwo() //Driver 2 controls cube intake and cube lifter
                 down=true;
                 if(cubeLiftCount<50)
                         down=false;
-        }*/
+        }*//*
         else{ //Stop
                 servo[cubeLifter]=CRStop;
             }
@@ -171,7 +171,7 @@ void joystickControllerTwo() //Driver 2 controls cube intake and cube lifter
                 motor[primaryCubeIntake] = 0;
                 motor[motorA] = 0;
                 motor[motorB] = 0;
-        }
+        }*/
 }
 void BeethovenFifth()
 {
