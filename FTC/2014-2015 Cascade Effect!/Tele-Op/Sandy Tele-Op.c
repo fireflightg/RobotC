@@ -65,10 +65,10 @@ void allStop(){
 }
 
 //Joystick one controls the drive train and goal grabbers
-void joyStickOne(){
-	
+void joystickOne(){
+
 	getJoystickSettings(joystick);
-	
+
 	if(abs(joystick.joy1_y1)>_threshold)//Check joystick not in deadzone
 	{
 		motor[driveRight] = joystick.joy1_y1;
@@ -99,7 +99,7 @@ void joyStickOne(){
 }
 
 //Joystick two controls the lift, scoop bridge, and intake
-void joyStickTwo()
+void joystickTwo()
 {
 
 	getJoystickSettings(joystick);
@@ -110,7 +110,7 @@ void joyStickTwo()
 	}
 	else if(joy2Btn(3))//Intake forward
 	{
-		motor[intake] = 60;
+		motor[intake] = 80;
 	}
 	else{
 		motor[intake] = 0;
@@ -154,7 +154,7 @@ void joyStickTwo()
 
 task main()
 {
-	
+
 	init();
 
 	waitForStart();
@@ -162,7 +162,7 @@ task main()
 	while(true)
 	{
 		joystickOne();
-		joyStickTwo();
-		delay(5);
+		joystickTwo();
+		wait1Msec(5);
 	}
 }
