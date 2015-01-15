@@ -71,19 +71,19 @@ void joystickOne(){
 
 	if(abs(joystick.joy1_y1)>_threshold)//Check joystick not in deadzone
 	{
-		motor[driveRight] = joystick.joy1_y1;
+		motor[driveLeft] = joystick.joy1_y1/abs(joystick.joy1_y1)*exponentialJoystick(joystick.joy1_y1);
+	}
+	else
+	{
+		motor[driveLeft] = 0;
+	}
+	if(abs(joystick.joy1_y2)>_threshold)
+	{
+		motor[driveRight] = -joystick.joy1_y2/abs(joystick.joy1_y2)*exponentialJoystick(joystick.joy1_y2);
 	}
 	else
 	{
 		motor[driveRight] = 0;
-	}
-
-	if(abs(joystick.joy1_y2)>_threshold)
-	{
-		motor[driveLeft] = joystick.joy1_y2;
-	}
-	else{
-		motor[driveLeft] = 0;
 	}
 
 	if(joy1Btn(8))//Grab rolling goal
@@ -110,7 +110,7 @@ void joystickTwo()
 	}
 	else if(joy2Btn(3))//Intake forward
 	{
-		motor[intake] = 80;
+		motor[intake] = 50;
 	}
 	else{
 		motor[intake] = 0;
@@ -163,6 +163,6 @@ task main()
 	{
 		joystickOne();
 		joystickTwo();
-		wait1Msec(5);
+		wait1Msec(5);//Debouncing
 	}
 }
