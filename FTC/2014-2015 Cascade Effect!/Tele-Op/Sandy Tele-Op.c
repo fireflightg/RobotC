@@ -18,7 +18,7 @@
 void init(){
 	servo[fieldGrabberLeft] = _open;
 	servo[fieldGrabberRight] = 255-_open;
-	servo[scoopBridge] = 127;
+	servo[scoopBridge] = 255;
 	servo[rampBridge] = 0;
 }
 
@@ -86,12 +86,12 @@ void joystickOne(){
 		motor[driveRight] = 0;
 	}
 
-	if(joy1Btn(8))//Grab rolling goal
+	if(joy1Btn(8)||joy1Btn(7))//Grab rolling goal
 	{
 		sticksDown();
 	}
 
-	if(joy1Btn(6))//Release rolling goal
+	if(joy1Btn(6)||joy1Btn(5))//Release rolling goal
 	{
 		sticksUp();
 	}
