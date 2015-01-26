@@ -18,7 +18,7 @@
 void init(){
 	servo[fieldGrabberLeft] = _open;
 	servo[fieldGrabberRight] = 255-_open;
-	servo[scoopBridge] = 255;
+	servo[scoopBridge] = 155;
 	servo[rampBridge] = 0;
 }
 
@@ -38,12 +38,12 @@ void sticksUp(){
 
 void retainBalls()
 {
-	servo[scoopBridge] = 0;
+	servo[scoopBridge] = 155;
 }
 
 void releaseBalls()
 {
-	servo[scoopBridge] = 256;
+	servo[scoopBridge] = 0;
 }
 
 void closeRamp()
@@ -143,11 +143,11 @@ void joystickTwo()
 
 	if(joy2Btn(7))//Release balls
 	{
-		releaseBalls();
+		retainBalls();
 	}
 	else if(joy2Btn(8))//Raise scoop bridge
 	{
-		retainBalls();
+		releaseBalls();
 	}
 
 }
