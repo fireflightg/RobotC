@@ -43,7 +43,7 @@ void retainBalls()
 
 void releaseBalls()
 {
-	servo[scoopBridge] = 0;
+	servo[scoopBridge] = 145;
 }
 
 void closeRamp()
