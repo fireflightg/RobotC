@@ -22,6 +22,7 @@
 #define _threshold 20
 
 int acS1, acS2, acS3, acS4, acS5 = 0;
+float timer;
 
 float exponentialJoystick(int joyVal){
 	return (float)5.60015*pow(2.718281828,0.96781*(abs(joyVal)/40));
@@ -111,7 +112,7 @@ void init(){
 	openRamp();
 }
 
-void drive(int direction,float time,int powerLevel){//Dir:time(seconds):1 = forward, 0 = reverse:
+void drive(int direction,float time,int powerLevel){//Dir:time(seconds):1 = reverse, 0 = forward:
 	//Drive in a straight line GYRO
 	float rotSpeed = 0;
 	float heading = 0;
@@ -135,8 +136,13 @@ void drive(int direction,float time,int powerLevel){//Dir:time(seconds):1 = forw
 		// the last time we measured.
 		heading += rotSpeed * 0.02;
 
-		motor[driveLeft] = (powerLevel+powerLevel*.15*heading)*dir;
-		motor[driveRight] = -(powerLevel-powerLevel*.15*heading)*dir;
+		if(direction==0){
+			motor[driveLeft] = (powerLevel+powerLevel*.15*heading)*dir;
+			motor[driveRight] = -(powerLevel-powerLevel*.15*heading)*dir;
+			}else{
+			motor[driveLeft] = (powerLevel-powerLevel*.15*heading)*dir;
+			motor[driveRight] = -(powerLevel+powerLevel*.15*heading)*dir;
+		}
 	}
 }
 
@@ -144,7 +150,7 @@ void turn(int direction,int degrees,int powerLevel){//Dir:1 = right, 0 = left::D
 	//Accurately turn with GYRO
 	float rotSpeed = 0;
 	float heading = 0;
-	int slow = powerLevel/3;
+	int slow = powerLevel/2;
 	// Calibrate the gyro, make sure you hold the sensor still
 	HTGYROstartCal(HTGYRO);
 	while(true){
@@ -163,8 +169,8 @@ void turn(int direction,int degrees,int powerLevel){//Dir:1 = right, 0 = left::D
 		// then we will have turned 100 * (20/1000) = 2 degrees since
 		// the last time we measured.
 		heading += rotSpeed * 0.02;
-		if(heading>degrees*(3.0/4.0))
-			powerLevel=slow;
+		//if(heading>degrees*3.0/4.0)
+		//	powerLevel=slow;
 		if(direction==1)
 			right(powerLevel);
 		else if(direction==0)
@@ -172,7 +178,6 @@ void turn(int direction,int degrees,int powerLevel){//Dir:1 = right, 0 = left::D
 
 		if(abs(heading)>degrees)
 			break;
-		nxtDisplayCenteredBigTextLine(1,"HELPLPEL");
 	}
 }
 
@@ -180,7 +185,7 @@ task main()
 {
 	init();
 	waitForStart();
-	drive(1,2.2,20);
+	drive(1,2.15,30);
 	allStop();
 	wait1Msec(500);
 	turn(1,90,50);
@@ -192,7 +197,7 @@ task main()
 	allStop();
 	wait1Msec(750);
 	//DO WHATEVER DEPENDING ON CENTER ROTATION
-determineRotation:
+	determineRotation:
 	HTIRS2readAllACStrength(HTIRS2, acS1, acS2, acS3, acS4, acS5 );
 	int avg1=acS1,avg2,avg3,avg4,avg5;
 	for(int j=0;j<10;++j){
@@ -205,7 +210,7 @@ determineRotation:
 	}
 	if(acS2>16||acS3>30){ //Center is in rotation 1
 		while(true){
-			nxtDisplayCenteredTextLine(1,"Rot1");}
+		nxtDisplayCenteredTextLine(1,"Rot1");}
 		forward(50);
 		wait1Msec(100);
 		allStop();
@@ -224,49 +229,58 @@ determineRotation:
 		StopAllTasks();
 	}
 	else{
-		turn(0,25,100);
+		turn(1,25,50);
 		allStop();
 		wait1Msec(500);
-		for(int j=0;j<10;++j){
+		drive(0,.45,50);
+		allStop();
+		wait1Msec(500);
+		time1[T1]=0;
+		bool irfound = false;
+		timer = 0.0;
+		while(time1[T1] < 700){
 			HTIRS2readAllACStrength(HTIRS2, acS1, acS2, acS3, acS4, acS5 );
-			avg1=(avg1+acS1)/2;
-			avg2=(avg2+acS2)/2;
-			avg3=(avg3+acS3)/2;
-			avg4=(avg4+acS4)/2;
-			avg5=(avg5+acS5)/2;
+			forward(50);
+			if(acS2>15){
+				irfound = true;
+				timer = time1[T1];
+				break;
+			}
 		}
-		if(avg3>15){ //Center is in rotation 2
+		allStop();
+		wait1Msec(500);
+		if(irfound){ //Center is in rotation 2
 			while(true){
-				nxtDisplayCenteredTextLine(1,"Rot2:%d",avg3);}
-			forward(100);
-			wait1Msec(300);
-			allStop();
-			wait1Msec(750);
-			left(100);
-			wait1Msec(600);
+			nxtDisplayCenteredTextLine(1,"Timer:%f",timer);}
+			nxtDisplayCenteredTextLine(1,"Rot2:%d",acS2);
+			drive(1,timer,50);
 			allStop();
 			wait1Msec(500);
-			forward(100);
-			wait1Msec(750);
+			turn(0,80,80);
+			allStop();
+			wait1Msec(500);
+			drive(0,1.5,100);
+			allStop();
+			wait1Msec(500);
 		}
 		else{ //Center is in rotation 3
 			nxtDisplayCenteredTextLine(1,"Rot3");
-			turn(0,155,100);
-			while(true){nxtDisplayCenteredBigTextLine(1,"WAITITIWT");}
-			while(SensorValue[sonarSensor]>10){
+			drive(1,.475,50);
+			allStop();
+			wait1Msec(500);
+			turn(1,110,50);
+			while(SensorValue[sonarSensor]>25){
 				nxtDisplayCenteredBigTextLine(1,"GOGOGOGOG");
 				backward(30);
 			}
-			wait1Msec(200);
 			allStop();
 			wait1Msec(750);
-			while(true){nxtDisplayCenteredBigTextLine(1,"What next?");}
-			turn(1,80,90);
-			wait1Msec(900);
+			turn(0,65,100);
 			allStop();
 			wait1Msec(500);
-			forward(100);
-			wait1Msec(750);
+			drive(1,1.5,100);
+			allStop();
+			wait1Msec(1000);
 		}
 	}
 }

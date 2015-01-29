@@ -72,10 +72,13 @@ float heading = 0;
 void drive(int direction,int powerLevel){//Dir:0 = forward, 1 = reverse:
   //Accurately drive in a straigt line using GYRO
 	int dir = direction==0?1:-1;
-
-	motor[driveLeft] = (powerLevel+powerLevel*.15*heading)*dir;
-	motor[driveRight] = -(powerLevel-powerLevel*.15*heading)*dir;
-
+	if(direction==0){
+		motor[driveLeft] = (powerLevel+powerLevel*.15*heading)*dir;
+		motor[driveRight] = -(powerLevel-powerLevel*.15*heading)*dir;
+	}else{
+		motor[driveLeft] = (powerLevel-powerLevel*.15*heading)*dir;
+		motor[driveRight] = -(powerLevel+powerLevel*.15*heading)*dir;
+	}
 }
 
 
