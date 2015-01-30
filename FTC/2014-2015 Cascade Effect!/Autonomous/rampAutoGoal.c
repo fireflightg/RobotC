@@ -22,7 +22,6 @@
 #define _threshold 20
 
 int acS1, acS2, acS3, acS4, acS5 = 0;
-float timer;
 
 float exponentialJoystick(int joyVal){
 	return (float)5.60015*pow(2.718281828,0.96781*(abs(joyVal)/40));
@@ -110,6 +109,7 @@ void init(){
 	servo[rampBridge] = 0;
 	nMotorEncoder[intake] = 0;
 	openRamp();
+	sticksUp();
 }
 
 void drive(int direction,float time,int powerLevel){//Dir:time(seconds):1 = reverse, 0 = forward:
@@ -150,7 +150,7 @@ void turn(int direction,int degrees,int powerLevel){//Dir:1 = right, 0 = left::D
 	//Accurately turn with GYRO
 	float rotSpeed = 0;
 	float heading = 0;
-	int slow = powerLevel/3;
+	int slow = powerLevel/2;
 	// Calibrate the gyro, make sure you hold the sensor still
 	HTGYROstartCal(HTGYRO);
 	while(true){
@@ -185,93 +185,65 @@ task main()
 {
 	init();
 	waitForStart();
-	drive(1,1.9,30);
+
+	while(SensorValue[sonarSensor]>25){
+		backward(30);
+	}
+	allStop();
+	wait1Msec(100);
+	backward(20);
+	wait1Msec(500);
+	sticksDown();
+	wait1Msec(250);
 	allStop();
 	wait1Msec(500);
-	turn(1,90,50);
+	turn(1,22,70);
 	allStop();
-	wait1Msec(700);
-	bFloatDuringInactiveMotorPWM = true;
-	drive(0,1.0,50);
-	bFloatDuringInactiveMotorPWM = false;
+	wait1Msec(500);
+	drive(0,2.0,100);
 	allStop();
-	wait1Msec(750);
-	//DO WHATEVER DEPENDING ON CENTER ROTATION
-	determineRotation:
-	HTIRS2readAllACStrength(HTIRS2, acS1, acS2, acS3, acS4, acS5 );
-	int avg1=acS1,avg2,avg3,avg4,avg5;
-	for(int j=0;j<10;++j){
-		HTIRS2readAllACStrength(HTIRS2, acS1, acS2, acS3, acS4, acS5 );
-		avg1=(avg1+acS1)/2;
-		avg2=(avg2+acS2)/2;
-		avg3=(avg3+acS3)/2;
-		avg4=(avg4+acS4)/2;
-		avg5=(avg5+acS5)/2;
+	wait1Msec(500);
+	turn(0,170,100);
+	allStop();
+	wait1Msec(500);
+	sticksUp();
+	drive(1,.3,100);
+	allStop();
+	wait1Msec(500);
+	turn(0,180,100);
+	allStop();
+	wait1Msec(500);
+	while(SensorValue[sonarSensor]>40){
+		backward(100);
 	}
-	if(acS2>16||acS3>30){ //Center is in rotation 1
-		nxtDisplayCenteredTextLine(1,"Rot1");
-		turn(0,90,50);
-		allStop();
-		wait1Msec(500);
-		drive(0,.85,50);
-		allStop();
-		wait1Msec(500);
-		turn(1,80,50);
-		allStop();
-		wait1Msec(500);
-		drive(0,1.5,100);
-		allStop();
-		wait1Msec(500);
+	allStop();
+	wait1Msec(500);
+	time1[T1] = 0;
+	float tim = 0.0;
+	while(SensorValue[sonarSensor]>30){
+		right(50);
+		tim = T1;
+	}allStop();
+	wait1Msec(500);
+	while(SensorValue[sonarSensor]>25){
+		backward(50);
 	}
-	else{
-		turn(1,25,50);
-		allStop();
-		wait1Msec(500);
-		time1[T1]=0;
-		bool irfound = false;
-		timer = 0.0;
-		while(time1[T1] < 700){
-			HTIRS2readAllACStrength(HTIRS2, acS1, acS2, acS3, acS4, acS5 );
-			forward(50);
-			if(acS2>15){
-				irfound = true;
-				timer = time1[T1]/1000+.3;
-				break;
-			}
-		}
-		allStop();
-		wait1Msec(500);
-		if(irfound){ //Center is in rotation 2
-			nxtDisplayCenteredTextLine(1,"Timer:%f",timer);
-			nxtDisplayCenteredTextLine(1,"Rot2:%d",acS2);
-			drive(1,timer,50);
-			allStop();
-			wait1Msec(500);
-			turn(0,90,80);
-			allStop();
-			wait1Msec(500);
-			drive(0,1.5,100);
-			allStop();
-			wait1Msec(500);
-		}
-		else{ //Center is in rotation 3
-			nxtDisplayCenteredTextLine(1,"Rot3");
-			drive(1,.5,50);
-			allStop();
-			wait1Msec(500);
-			turn(1,110,50);
-			while(SensorValue[sonarSensor]>20){
-				nxtDisplayCenteredBigTextLine(1,"GOGOGOGOG");
-				backward(30);
-			}
-			allStop();
-			wait1Msec(750);
-			turn(0,65,100);
-			allStop();
-			wait1Msec(500);
-			drive(1,1.5,100);
-			allStop();
-			wait1Msec(1000);
-		}
-	}
+	wait1Msec(400);
+	allStop();
+	wait1Msec(100);
+	backward(30);
+	wait1Msec(500);
+	sticksDown();
+	wait1Msec(250);
+	allStop();
+	time1[T1] = 0;
+	turn(1,15,100);
+	allStop();
+	wait1Msec(500);
+	drive(0,2.25,100);
+	turn(0,175,100);
+	allStop();
+	wait1Msec(500);
+	sticksUp();
+	drive(1,.3,100);
 }
