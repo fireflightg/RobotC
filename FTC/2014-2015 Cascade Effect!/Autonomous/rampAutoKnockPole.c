@@ -210,10 +210,10 @@ task main()
 	}
 	if(acS2>16||acS3>30){ //Center is in rotation 1
 		nxtDisplayCenteredTextLine(1,"Rot1");
-		turn(0,90,50);
+		turn(0,90,70);
 		allStop();
 		wait1Msec(500);
-		drive(0,.85,50);
+		drive(0,.98,50);
 		allStop();
 		wait1Msec(500);
 		turn(1,80,50);
@@ -256,10 +256,10 @@ task main()
 		}
 		else{ //Center is in rotation 3
 			nxtDisplayCenteredTextLine(1,"Rot3");
-			drive(1,.5,50);
+			drive(1,.7,50);
 			allStop();
 			wait1Msec(500);
-			turn(1,110,50);
+			turn(1,125,50);
 			while(SensorValue[sonarSensor]>20){
 				nxtDisplayCenteredBigTextLine(1,"GOGOGOGOG");
 				backward(30);
