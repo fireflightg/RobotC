@@ -251,7 +251,7 @@ task main()
 	allStop();
 	wait1Msec(100);
   raiseLift(100);
-  while (nMotorEncoder[intake] > -2200) //while the encoder wheel turns one revolution
+  while (nMotorEncoder[intake] > -2050) //while the encoder wheel turns one revolution
   {
   }
 	allStop();

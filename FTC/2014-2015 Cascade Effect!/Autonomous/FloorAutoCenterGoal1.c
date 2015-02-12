@@ -203,7 +203,7 @@ task main()
 		avg4=(avg4+acS4)/2;
 		avg5=(avg5+acS5)/2;
 	}
-	if(acS3>50&&acS4>40||true){ //Center is in rotation 3 (s2-90,s3-70)
+	if(acS3>50&&acS4>40){ //Center is in rotation 3 (s2-90,s3-70)
 		nxtDisplayCenteredTextLine(1,"Rot3");
 		//Drop Ball
 		drive(1,.2,100);
@@ -215,8 +215,12 @@ task main()
 		while(SensorValue[sonarSensor]>21){
 			backward(30);
 		}
+		wait1Msec(200);
 		allStop();
 		wait1Msec(500);
+		drive(0,.3,30);
+		allStop();
+		wait1Msec(100);
 		raiseLift(100);
 		while (nMotorEncoder[intake] > -2800) //while the encoder wheel turns one revolution
 		{
@@ -229,10 +233,25 @@ task main()
 		retainBalls();
 		allStop();
 		wait1Msec(750);
-		lowerLift(20);
-		while (nMotorEncoder[intake] < 500) //while the encoder wheel turns one revolution
+		lowerLift(80);
+		while (nMotorEncoder[intake] < 1500) //while the encoder wheel turns one revolution
 		{
 		}
+		allStop();
+		wait1Msec(500);
+		turn(1,165,70);
+		allStop();
+		wait1Msec(100);
+		turn(1,80,50);
+		allStop();
+		wait1Msec(500);
+		drive(0,.65,50);
+		allStop();
+		wait1Msec(500);
+		turn(0,90,100);
+		allStop();
+		wait1Msec(500);
+		drive(0,1.5,100);
 		allStop();
 		wait1Msec(500);
 	}
