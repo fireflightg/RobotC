@@ -21,7 +21,7 @@ void init(){
 	servo[fieldGrabberLeft] = _open;
 	servo[fieldGrabberRight] = 255-_open;
 	servo[rampBridge] = 0;
-	servo[scoopBridge] = 155;
+	servo[scoopBridge] = 135;
 	//nMotorEncoder[intake] = 0;
 }
 
@@ -41,7 +41,7 @@ void sticksUp(){
 
 void retainBalls()
 {
-	servo[scoopBridge] = 155;
+	servo[scoopBridge] = 135;
 }
 
 void releaseBalls()
@@ -152,15 +152,15 @@ void joystickTwo()
 		closeRamp();
 	}
 
-	if(joy2Btn(5))//Lift down
+	if(joy2Btn(6))//Lift up
 	{
-		motor[lift] = 70;
-		motor[liftMotor3] = -70;
+		motor[lift] = 100;
+		motor[liftMotor3] = -100;
 	}
-	else if(joy2Btn(6))//Lift ups
+	else if(joy2Btn(5))//Lift ups
 	{
-		motor[lift] = -100;
-		motor[liftMotor3] = 100;
+		motor[lift] = -60;
+		motor[liftMotor3] = 60;
 	}
 	else
 	{
