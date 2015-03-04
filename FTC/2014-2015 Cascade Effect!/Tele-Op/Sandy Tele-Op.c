@@ -8,6 +8,7 @@
 #pragma config(Servo,  srvo_S1_C2_2,    fieldGrabberLeft,     tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_3,    scoopBridge,          tServoStandard)
 #pragma config(Servo,  srvo_S1_C2_4,    rampBridge,          tServoStandard)
+#pragma config(Servo,  srvo_S1_C2_5,    autoBallRelease,          tServoStandard)
 #pragma config(Sensor, S4,     HTGYRO,              sensorAnalogInactive)
 
 #include "JoystickDriver.c"
@@ -22,11 +23,20 @@ void init(){
 	servo[fieldGrabberRight] = 255-_open;
 	servo[rampBridge] = 0;
 	servo[scoopBridge] = 135;
+	servo[autoBallRelease] = 45;
 	//nMotorEncoder[intake] = 0;
 }
 
 float exponentialJoystick(int joyVal){
 	return (float)5.60015*pow(2.718281828,0.96781*(abs(joyVal)/40));
+}
+
+void releaseAutoBall(){
+	servo[autoBallRelease] = 125;
+}
+
+void retainAutoBall(){
+	servo[autoBallRelease] = 45;
 }
 
 void sticksDown(){
