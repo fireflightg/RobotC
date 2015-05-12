@@ -29,7 +29,7 @@ task main()
 	wait1Msec(100);
   	raiseLift(100);
   	time1[T1]=0;
-  	while (nMotorEncoder[intake] < 1781 && time1[T1] < 2500) //while the encoder wheel turns one revolution
+  	while (nMotorEncoder[intake] < 410 && time1[T1] < 2500) //while the encoder wheel turns one revolution
   	{
   		times = time1[T1];
   	}
@@ -46,7 +46,7 @@ task main()
 	allStop();
 	wait1Msec(750);
   	lowerLift(80);
-  	while (nMotorEncoder[intake] > -45) //while the encoder wheel turns one revolution
+  	while (nMotorEncoder[intake] > 220) //while the encoder wheel turns one revolution
   	{
   	}
 	allStop();
@@ -71,7 +71,7 @@ task main()
 	}
 	allStop();
 	wait1Msec(100);
-	turn(0,21,70);
+	turn(0,25,70);
 	allStop();
 	wait1Msec(100);
 	driveSonar(1,25,50);
@@ -81,7 +81,7 @@ task main()
 	wait1Msec(250);
 	allStop();
 	raiseLift(100);
-  	while (nMotorEncoder[intake] < 2619) //while the encoder wheel turns one revolution
+  	while (nMotorEncoder[intake] < 1000) //while the encoder wheel turns one revolution
   	{
   	}
 	allStop();
@@ -93,7 +93,7 @@ task main()
 	allStop();
 	wait1Msec(750);
   	lowerLift(80);
-  	while (nMotorEncoder[intake] > 158) //while the encoder wheel turns one revolution
+  	while (nMotorEncoder[intake] > 740) //while the encoder wheel turns one revolution
   	{
   	}
 	allStop();

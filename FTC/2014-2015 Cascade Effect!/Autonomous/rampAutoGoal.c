@@ -68,7 +68,7 @@ void turnToGlobalHeading(int targetHeading){
 task raiseLiftWhile(){
   raiseLift(100);
   time1[T1]=0;
-	while (nMotorEncoder[intake] < 1781 && time1[T1] < 2800) //while the encoder wheel turns one revolution
+	while (nMotorEncoder[intake] < 415 && time1[T1] < 2800) //while the encoder wheel turns one revolution
   {
   	times = time1[T1];
   }
@@ -102,7 +102,7 @@ task main()
 	allStop();
 	wait1Msec(750);
   lowerLift(80);
-  while (nMotorEncoder[intake] > -45) //while the encoder wheel turns one revolution
+  while (nMotorEncoder[intake] > 220) //while the encoder wheel turns one revolution
   {
   }
 	allStop();
@@ -154,7 +154,7 @@ task main()
 	sticksDown();
 	wait1Msec(250);
 	allStop();
-	turn(1,18,70);
+	turn(1,17,70);
 	allStop();
 	wait1Msec(100);
 	drive(0,2.7,100);
@@ -164,5 +164,5 @@ task main()
 	allStop();
 	wait1Msec(50);
 	sticksUp();
-	drive(1,.3,100);
+	drive(1,.8,100);
 }

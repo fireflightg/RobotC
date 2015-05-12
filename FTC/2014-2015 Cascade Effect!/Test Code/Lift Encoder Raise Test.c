@@ -78,12 +78,12 @@ void allStop(){
 
 void raiseLift(int powerLevel){
 		motor[lift] = powerLevel;
-		motor[liftMotor3] = powerLevel;
+		motor[liftMotor3] = -powerLevel;
 }
 
 void lowerLift(int powerLevel){
 		motor[lift] = -powerLevel;
-		motor[liftMotor3] = -powerLevel;
+		motor[liftMotor3] = powerLevel;
 }
 
 void intakeIn(int powerLevel){
@@ -119,12 +119,9 @@ void init(){
 	servo[fieldGrabberLeft] = _open;
 	servo[fieldGrabberRight] = 255-_open;
 	servo[scoopBridge] = 155;
-	servo[rampBridge] = 0;
 	nMotorEncoder[intake] = 0;
-	openRamp();
 	sticksUp();
 	retainAutoBall();
-	releaseAutoBall();//drgsfgg
 	HTGYROstartCal(HTGYRO);
 }
 
@@ -287,7 +284,7 @@ task main()
 	sticksDown();
   raiseLift(100);
   time1[T1]=0;
-  while (nMotorEncoder[intake] < 1276 && time1[T1] < 2500) //while the encoder wheel turns one revolution
+  while (nMotorEncoder[intake] < 430 && time1[T1] < 2500) //while the encoder wheel turns one revolution
   {
   	times = time1[T1];
   }
@@ -304,9 +301,14 @@ task main()
 	allStop();
 	wait1Msec(750);
   lowerLift(20);
-  while (nMotorEncoder[intake] > 86) //while the encoder wheel turns one revolution
+  while (nMotorEncoder[intake] > 220) //while the encoder wheel turns one revolution
   {
   }
+	allStop();
+	wait1Msec(500);
+	releaseAutoBall();
+	intakeIn(100);
+	wait1Msec(600);
 	allStop();
 	wait1Msec(500);
 	sticksUp();
@@ -320,7 +322,7 @@ task main()
 	allStop();
 	wait1Msec(500);
 	raiseLift(100);
-  while (nMotorEncoder[intake] < 1850) //while the encoder wheel turns one revolution
+  while (nMotorEncoder[intake] < 1000) //while the encoder wheel turns one revolution
   {
   }
 	allStop();
@@ -332,7 +334,7 @@ task main()
 	allStop();
 	wait1Msec(750);
   lowerLift(20);
-  while (nMotorEncoder[intake] > -153) //while the encoder wheel turns one revolution
+  while (nMotorEncoder[intake] > 740) //while the encoder wheel turns one revolution
   {
   }
 	allStop();

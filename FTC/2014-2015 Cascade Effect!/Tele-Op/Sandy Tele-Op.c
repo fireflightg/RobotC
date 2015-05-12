@@ -25,7 +25,7 @@ void init(){
 	servo[rampBridge] = 0;
 	servo[scoopBridge] = 137;
 	servo[autoBallRelease] = 200;
-	//nMotorEncoder[intake] = 0;
+	nMotorEncoder[intake] = 0;
 }
 
 float exponentialJoystick(int joyVal){
@@ -166,12 +166,12 @@ void joystickTwo()
 	if(joy2Btn(6))//Lift Down
 	{
 		motor[lift] = 100;
-		motor[liftMotor3] = 100;
+		motor[liftMotor3] = -100;
 	}
 	else if(joy2Btn(5))//Lift ups
 	{
 		motor[lift] = -30;
-		motor[liftMotor3] = -30;
+		motor[liftMotor3] = 30;
 	}
 	else
 	{
